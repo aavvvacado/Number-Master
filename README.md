@@ -6,6 +6,11 @@ A challenging number-matching puzzle game built with Flutter, featuring advanced
 
 Number Master is a strategic puzzle game where players match numbers that are either equal or sum to 10. The game features progressive difficulty, undo/redo functionality, and intelligent hint systems.
 
+### Video
+
+
+
+
 ## 🏗️ Architecture & Design Patterns
 
 ### State Management
