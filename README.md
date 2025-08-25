@@ -6,8 +6,9 @@ A challenging number-matching puzzle game built with Flutter, featuring advanced
 
 Number Master is a strategic puzzle game where players match numbers that are either equal or sum to 10. The game features progressive difficulty, undo/redo functionality, and intelligent hint systems.
 
-### Video
 
+
+### 🎥 Demo Video
 
 https://github.com/user-attachments/assets/e668671d-a5cd-413e-8e82-1ae5d9a4e77c
 
@@ -210,37 +211,8 @@ static void printBoard() {
 - **Null Safety**: Comprehensive null checking throughout
 - **State Validation**: Ensures consistent state across operations
 
-## 📱 User Interface Features
 
-### Visual Feedback
-- **Selection Highlighting**: Clear visual indication of selected cells
-- **Match Animation**: Visual feedback for successful matches
-- **Invalid Match Feedback**: Temporary highlighting for invalid selections
-- **Progress Indicators**: Real-time progress tracking
 
-### Accessibility
-- **Responsive Design**: Adapts to different screen sizes
-- **Touch Optimization**: Optimized for touch interactions
-- **Visual Clarity**: Clear visual hierarchy and contrast
-
-## 🔮 Future Enhancements
-
-### Planned Features
-- **Sound Effects**: Audio feedback for game actions
-- **Achievement System**: Unlockable achievements and milestones
-- **Custom Themes**: Multiple visual themes
-- **Statistics Tracking**: Detailed game statistics and analytics
-- **Multiplayer Support**: Competitive multiplayer modes
-
-### Technical Improvements
-- **Performance Optimization**: Further optimization for large grids
-- **Animation System**: Smooth animations for all interactions
-- **Localization**: Multi-language support
-- **Cloud Sync**: Game progress synchronization
-
-## 🎥 Demo Video
-
-*[Video demonstration will be added here]*
 
 ## 📋 Assignment Submission Details
 
@@ -279,10 +251,6 @@ static void printBoard() {
 ### Building
 - **Debug**: `flutter run`
 - **Release**: `flutter build apk` or `flutter build ios`
-
-## 📄 License
-
-This project is developed as an academic assignment submission.
 
 ---
 
