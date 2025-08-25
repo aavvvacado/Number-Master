@@ -9,6 +9,14 @@ Number Master is a strategic puzzle game where players match numbers that are ei
 ### Video
 
 
+https://github.com/user-attachments/assets/e668671d-a5cd-413e-8e82-1ae5d9a4e77c
+
+
+
+
+
+
+
 
 
 ## 🏗️ Architecture & Design Patterns
