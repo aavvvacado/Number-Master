@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
           useMaterial3: true,
           scaffoldBackgroundColor: const Color(0xFFF6F8FC),
-          cardTheme: CardTheme(
+          cardTheme: CardThemeData(
             color: Colors.white,
             surfaceTintColor: Colors.white,
             elevation: 2,
