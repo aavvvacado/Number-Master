@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_master/Bloc/game_bloc.dart';
-import 'package:number_master/Screens/game_screen.dart';
+
+import 'package:number_master/Screens/intro_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const GameScreen(),
+        home: const IntroScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );
