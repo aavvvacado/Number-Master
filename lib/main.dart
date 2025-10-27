@@ -2,13 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_master/Bloc/game_bloc.dart';
 import 'package:number_master/Screens/game_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Get SharedPreferences instance
+  final prefs = await SharedPreferences.getInstance();
+
+  // Check for the flag. '?? true' means default to true if it doesn't exist
+  final bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+  runApp(MyApp(isFirstTime: isFirstTime));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool? isFirstTime;
+  const MyApp({super.key, this.isFirstTime});
 
   @override
   Widget build(BuildContext context) {
