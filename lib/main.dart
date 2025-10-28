@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_master/Bloc/game_bloc.dart';
 import 'package:number_master/Screens/game_screen.dart';
-import 'package:number_master/Screens/info_screen.dart';
+import 'package:number_master/Screens/intro_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
