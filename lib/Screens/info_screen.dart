@@ -1,27 +1,23 @@
-// lib/intro_screen.dart
-
 import 'package:number_master/Screens/game_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IntroScreen extends StatefulWidget {
-  const IntroScreen({Key? key}) : super(key: key);
+  const IntroScreen({super.key});
 
   @override
   State<IntroScreen> createState() => _IntroScreenState();
 }
 
 class _IntroScreenState extends State<IntroScreen> {
-  // This controls the fade-in animation
   double _opacity = 0.0;
 
   @override
   void initState() {
     super.initState();
-    // Start the fade-in animation after a short delay
+
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
-        // Check if the widget is still in the widget tree
         setState(() {
           _opacity = 1.0;
         });
@@ -29,19 +25,13 @@ class _IntroScreenState extends State<IntroScreen> {
     });
   }
 
-  /// This function handles all the logic required when the user finishes the intro.
   Future<void> _completeIntro() async {
-    // 1. Requirement: Store flag in local storage
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isFirstTime', false);
 
-    // 2. Navigate to the main game screen and *replace* this intro screen
-    //    so the user can't press "back" to get to it.
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-            builder: (context) =>
-                const GameScreen()), // <-- Make sure GameScreen() is correct
+        MaterialPageRoute(builder: (context) => const GameScreen()),
       );
     }
   }
@@ -51,7 +41,6 @@ class _IntroScreenState extends State<IntroScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Main Content
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -60,23 +49,17 @@ class _IntroScreenState extends State<IntroScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Spacer(),
-
-                  // Requirement: Simple animation or logo intro
                   AnimatedOpacity(
                     opacity: _opacity,
-                    duration: const Duration(seconds: 2), // Fade-in duration
+                    duration: const Duration(seconds: 2),
                     curve: Curves.easeIn,
                     child: Column(
                       children: [
-                        // --- REPLACE THIS WITH YOUR LOGO OR ANIMATION ---
-                        // You can use:
-                        // - Image.asset('assets/logo.png')
-                        // - A Lottie animation widget
-                        const FlutterLogo(
+                        const Icon(
+                          Icons.numbers,
                           size: 140,
+                          color: Colors.indigo,
                         ),
-                        // --- END OF LOGO SECTION ---
-
                         const SizedBox(height: 24),
                         Text(
                           'Welcome to Number Master!',
@@ -103,7 +86,6 @@ class _IntroScreenState extends State<IntroScreen> {
 
                   const Spacer(),
 
-                  // "Get Started" Button
                   ElevatedButton(
                     onPressed: _completeIntro,
                     style: ElevatedButton.styleFrom(
@@ -115,15 +97,13 @@ class _IntroScreenState extends State<IntroScreen> {
                     ),
                     child: const Text('Get Started'),
                   ),
-                  const SizedBox(height: 20), // Padding at the bottom
+                  const SizedBox(height: 20), 
                 ],
               ),
             ),
           ),
-
-          // Requirement: Option to skip intro
           Positioned(
-            top: 40.0, // Adjust based on your device's status bar
+            top: 40.0,
             right: 20.0,
             child: SafeArea(
               child: TextButton(
