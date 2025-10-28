@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:number_master/Models/game_cell.dart';
+import 'package:number_master/Models/game_cell.dart'; // Assuming GameCell and CellState are defined here
 
 class GameCellWidget extends StatelessWidget {
   final GameCell cell;
@@ -22,6 +22,13 @@ class GameCellWidget extends StatelessWidget {
     Color borderColor;
     double opacity = 1.0;
 
+    // --- Define your new theme colors ---
+    const Color glowColor = Color(0xFF00FFFF); // Bright cyan for the "glow"
+    const Color darkCellBackground =
+        Color.fromARGB(255, 76, 5, 2); // Dark purple from image
+    const Color subtleBorder = Colors.transparent; // Or Colors.grey.shade800
+    // ------------------------------------
+
     if (isInvalid) {
       cardColor = Colors.red.shade400;
       textColor = Colors.white;
@@ -33,24 +40,43 @@ class GameCellWidget extends StatelessWidget {
     } else {
       switch (cell.state) {
         case CellState.selected:
-          cardColor = Colors.blue.shade400;
+          // --- This is the new "selected" style ---
+          cardColor = darkCellBackground;
           textColor = Colors.white;
-          borderColor = Colors.blue.shade700;
+          borderColor = const Color.fromARGB(
+              255, 244, 234, 126); // Use the bright "glow" color for the border
           break;
+        // --------------------------------------
         case CellState.matched:
-          cardColor = Colors.grey.shade300;
+          cardColor = const Color.fromARGB(255, 120, 2, 2);
           textColor = Colors.grey.shade600;
           borderColor = Colors.grey.shade400;
-          opacity = 0.6; // Faded effect
+          opacity = 0.4; // Faded effect
           break;
         case CellState.active:
         default:
-          cardColor = Colors.white;
-          textColor = Colors.black87;
-          borderColor = Colors.grey.shade400;
+          // --- This is the new "active" (default) style ---
+          cardColor = darkCellBackground;
+          textColor = Colors.white; // Set to white for dark background
+          borderColor = subtleBorder;
           break;
+        // ---------------------------------------------
       }
     }
+
+    // --- Define the shadows ---
+    final glowShadow = BoxShadow(
+      color: const Color.fromARGB(255, 246, 230, 113).withOpacity(0.7),
+      blurRadius: 10.0,
+      spreadRadius: 2.0,
+    );
+
+    final standardShadow = BoxShadow(
+      color: Colors.black.withOpacity(0.15),
+      blurRadius: 6,
+      offset: const Offset(2, 2),
+    );
+    // --------------------------
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
@@ -65,14 +91,15 @@ class GameCellWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: borderColor,
-              width: isInvalid ? 3 : (isHint ? 3 : 2),
+              // --- Make the border thicker when selected ---
+              width: isInvalid
+                  ? 3
+                  : (isHint ? 3 : (cell.state == CellState.selected ? 3 : 1)),
             ),
             boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 6,
-                offset: const Offset(2, 2),
-              ),
+              // --- Conditionally add the glow shadow ---
+              if (cell.state == CellState.selected) glowShadow,
+              standardShadow, // Always include the standard shadow for depth
             ],
           ),
           child: Center(
@@ -82,13 +109,8 @@ class GameCellWidget extends StatelessWidget {
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: textColor,
-                shadows: cell.state == CellState.selected ? [
-                  Shadow(
-                    offset: const Offset(1, 1),
-                    blurRadius: 2,
-                    color: Colors.black.withOpacity(0.3),
-                  ),
-                ] : null,
+                // --- Removed the selected text shadow, as it's not in the image ---
+                // shadows: ...
               ),
             ),
           ),

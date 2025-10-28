@@ -46,9 +46,10 @@ class GameGridWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: 2),
+        border:
+            Border.all(color: const Color.fromARGB(255, 90, 2, 2), width: 2),
         borderRadius: BorderRadius.circular(8),
-        color: Colors.grey.shade50,
+        color: const Color.fromARGB(255, 205, 65, 65),
       ),
       child: GridView.builder(
         padding: const EdgeInsets.all(8),
@@ -63,7 +64,7 @@ class GameGridWidget extends StatelessWidget {
           final cell = cells[index];
           final isInvalid = invalidMatchIds.contains(cell.id);
           final isHint = hintCellIds.contains(cell.id);
-          
+
           return GameCellWidget(
             cell: cell,
             onTap: onCellTap,
