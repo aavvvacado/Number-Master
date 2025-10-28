@@ -1,7 +1,13 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:number_master/Bloc/game_bloc.dart';
+
 import 'package:number_master/Models/game_level.dart';
+
 import 'package:number_master/widgets/game_grid_widget.dart';
 import 'package:confetti/confetti.dart';
 
@@ -32,6 +38,8 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Use a transparent scaffold to let the Stack's background show through
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Number Master'),
@@ -112,9 +120,10 @@ class _GameScreenState extends State<GameScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final currentLevel = GameLevel.levels[state.currentLevel - 1];
-          final matchesNeeded =
-              currentLevel.requiredMatches - state.matchesMade;
+              final currentLevel = GameLevel.levels[state.currentLevel - 1];
+
+              final matchesNeeded =
+                  currentLevel.requiredMatches - state.matchesMade;
 
           return Stack(alignment: Alignment.topCenter, children: [
             SafeArea(
