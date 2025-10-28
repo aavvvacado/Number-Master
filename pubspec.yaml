@@ -38,6 +38,8 @@ dependencies:
   flutter_bloc:
   equatable:
   shared_preferences: ^2.5.3
+  confetti: ^0.8.0
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:
