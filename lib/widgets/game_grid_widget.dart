@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:number_master/Models/game_cell.dart';
 import 'package:number_master/widgets/game_cell_widget.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class GameGridWidget extends StatelessWidget {
   final List<GameCell> cells;
@@ -44,33 +45,44 @@ class GameGridWidget extends StatelessWidget {
       }
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300, width: 2),
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.grey.shade50,
-      ),
-      child: GridView.builder(
-        padding: const EdgeInsets.all(8),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: maxColumns,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-          childAspectRatio: 1.0,
+    return AnimationLimiter(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300, width: 2),
+          borderRadius: BorderRadius.circular(8),
+          color: Colors.grey.shade50,
         ),
-        itemCount: cells.length,
-        itemBuilder: (context, index) {
-          final cell = cells[index];
-          final isInvalid = invalidMatchIds.contains(cell.id);
-          final isHint = hintCellIds.contains(cell.id);
-          
-          return GameCellWidget(
-            cell: cell,
-            onTap: onCellTap,
-            isInvalid: isInvalid,
-            isHint: isHint,
-          );
-        },
+        child: GridView.builder(
+          padding: const EdgeInsets.all(8),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: maxColumns,
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: cells.length,
+          itemBuilder: (context, index) {
+            final cell = cells[index];
+            final isInvalid = invalidMatchIds.contains(cell.id);
+            final isHint = hintCellIds.contains(cell.id);
+
+            return AnimationConfiguration.staggeredGrid(
+              position: index,
+              columnCount: maxColumns,
+              duration: const Duration(milliseconds: 375),
+              child: ScaleAnimation(
+                child: FadeInAnimation(
+                  child: GameCellWidget(
+                    cell: cell,
+                    onTap: onCellTap,
+                    isInvalid: isInvalid,
+                    isHint: isHint,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
