@@ -41,6 +41,8 @@ dependencies:
   google_fonts: ^6.3.2
   shared_preferences: ^2.2.3
   audioplayers: ^6.0.0
+  confetti: ^0.8.0
+  flutter_staggered_animations: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -264,6 +264,7 @@
 
 // ignore_for_file: deprecated_member_use
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_master/Bloc/game_bloc.dart';
@@ -279,9 +280,13 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  late ConfettiController _confettiController;
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 1),
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       BlocProvider.of<GameBloc>(context).add(GameInitialized());
@@ -289,8 +294,13 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   @override
+  void dispose() {
+    _confettiController.dispose(); // <-- Dispose of the controller
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Use a transparent scaffold to let the Stack's background show through
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -310,9 +320,8 @@ class _GameScreenState extends State<GameScreen> {
           BlocConsumer<GameBloc, GameState>(
             listener: (context, state) {
               if (state.status == GameStatus.won) {
-                // --- 2. ADD LEVEL UP SOUND ---
                 AudioService.instance.playLevelUpSound();
-                // --- END MODIFICATION ---
+                _confettiController.play();
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -470,6 +479,22 @@ class _GameScreenState extends State<GameScreen> {
                 ),
               );
             },
+          ),
+          Align(
+            alignment: Alignment.topCenter, // Position the confetti "cannon"
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              colors: const [
+                // Optional: custom colors
+                Colors.green,
+                Colors.blue,
+                Colors.pink,
+                Colors.orange,
+                Colors.purple
+              ],
+            ),
           ),
         ],
       ),
