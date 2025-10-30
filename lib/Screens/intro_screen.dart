@@ -131,21 +131,18 @@ class _IntroScreenState extends State<IntroScreen>
     );
   }
 
+  /// Exits the application.
   void _exitGame() {
     SystemNavigator.pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-    final screenHeight = screenSize.height;
-    final screenWidth = screenSize.width;
-
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Background Image (no change)
+          // 1. Background Image
           Image.asset(
             'assets/Theme/a.png',
             fit: BoxFit.cover,
@@ -153,113 +150,74 @@ class _IntroScreenState extends State<IntroScreen>
             colorBlendMode: BlendMode.darken,
           ),
 
-          // --- 2. Wrap UI in SafeArea and SingleChildScrollView ---
-          // SafeArea avoids notches/system bars
-          // SingleChildScrollView fixes vertical overflow by allowing scrolling
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // --- 3. Animate the Logo (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (BuildContext context, Widget? child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _logoSlideAnimation.value +
-                                _logoBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: SizedBox(
-                      // --- Use relative sizes instead of 600x400 ---
-                      width: screenWidth * 0.9, // 90% of screen width
-                      height: screenHeight * 0.4, // 40% of screen height
-                      child: Image.asset(
-                        "assets/Theme/NM.png",
-                        // --- Add .contain to prevent image distortion ---
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+          // 2. UI Elements in the foreground
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              // --- 11. Animate the Logo ---
+              AnimatedBuilder(
+                // Listen to BOTH controllers
+                animation: Listenable.merge([_entryController, _bobbingController]),
+                builder: (BuildContext context, Widget? child) {
+                  return Transform.translate(
+                    // ADD the slide value and the bob value together
+                    offset: Offset(0, _logoSlideAnimation.value + _logoBobAnimation.value),
+                    child: child,
+                  );
+                },
+                child: SizedBox(
+                  width: 600,
+                  height: 400,
+                  child: Image.asset(
+                    "assets/Theme/NM.png",
                   ),
-
-                  const SizedBox(height: 4.0), // Spacer
-
-                  // --- 4. Animate the Start Button (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _buttonSlideAnimation.value +
-                                _buttonBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: _buildImageButton(
-                      imagePath: 'assets/Theme/StartBtn.png',
-                      onTap: _startGame,
-                      // --- Pass in relative sizes ---
-                      width: screenWidth * 0.7, // 70% of screen width
-                      height: screenHeight * 0.12, // 12% of screen height
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  // --- 5. Animate the Rules Button (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _buttonSlideAnimation.value +
-                                _buttonBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: _buildImageButton(
-                      imagePath: 'assets/Theme/rules.png',
-                      onTap: _showRulesDialog,
-                      // --- Pass in relative sizes ---
-                      width: screenWidth * 0.7,
-                      height: screenHeight * 0.12,
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  // --- 6. Animate the Exit Button (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _buttonSlideAnimation.value +
-                                _buttonBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: _buildImageButton(
-                      imagePath: 'assets/Theme/exit.png',
-                      onTap: _exitGame,
-                      // --- Pass in relative sizes ---
-                      width: screenWidth * 0.7,
-                      height: screenHeight * 0.12,
-                    ),
-                  ),
-                  // --- Add final padding so the last button doesn't hug the bottom ---
-                  const SizedBox(height: 30.0),
-                ],
+                ),
               ),
-            ),
+
+              const SizedBox(height: 4.0), // Spacer
+
+              // --- 12. Animate the Start Button ---
+              AnimatedBuilder(
+                animation: Listenable.merge([_entryController, _bobbingController]),
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _buttonSlideAnimation.value + _buttonBobAnimation.value),
+                    child: child,
+                  );
+                },
+                child: _buildImageButton(
+                    imagePath: 'assets/Theme/StartBtn.png', onTap: _startGame),
+              ),
+              const SizedBox(height: 20.0),
+
+              // --- 13. Animate the Rules Button ---
+              AnimatedBuilder(
+                animation: Listenable.merge([_entryController, _bobbingController]),
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _buttonSlideAnimation.value + _buttonBobAnimation.value),
+                    child: child,
+                  );
+                },
+                child: _buildImageButton(
+                    imagePath: 'assets/Theme/rules.png',
+                    onTap: _showRulesDialog),
+              ),
+              const SizedBox(height: 20.0),
+
+              // --- 14. Animate the Exit Button ---
+              AnimatedBuilder(
+                animation: Listenable.merge([_entryController, _bobbingController]),
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _buttonSlideAnimation.value + _buttonBobAnimation.value),
+                    child: child,
+                  );
+                },
+                child: _buildImageButton(
+                    imagePath: 'assets/Theme/exit.png', onTap: _exitGame),
+              ),
+            ],
           ),
         ],
       ),
