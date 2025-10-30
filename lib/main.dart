@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_master/Bloc/game_bloc.dart';
 import 'package:number_master/Screens/intro_screen.dart';
 import 'package:number_master/Screens/welcome_screen.dart';
+import 'package:number_master/services/audio_player_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -10,7 +11,10 @@ Future<void> main() async {
 
   final prefs = await SharedPreferences.getInstance();
 
+
   final bool hasSeenWelcome = prefs.getBool('hasSeenWelcome') ?? false;
+ 
+  await AudioService.instance.loadPreferences();
 
   runApp(MyApp(hasSeenWelcome: hasSeenWelcome));
 }

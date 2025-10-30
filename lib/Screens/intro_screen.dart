@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:number_master/Screens/game_screen.dart';
 import 'package:number_master/Transitions/pageRoute.dart';
+import 'package:number_master/services/audio_player_services.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -10,14 +11,11 @@ class IntroScreen extends StatefulWidget {
   State<IntroScreen> createState() => _IntroScreenState();
 }
 
-// --- 1. Use TickerProviderStateMixin (plural) for multiple controllers ---
 class _IntroScreenState extends State<IntroScreen>
     with TickerProviderStateMixin {
-  // --- 2. Define both controllers ---
   late AnimationController _entryController;
   late AnimationController _bobbingController;
 
-  // --- 3. Define animations for both entry AND bobbing ---
   late Animation<double> _logoSlideAnimation;
   late Animation<double> _buttonSlideAnimation;
   late Animation<double> _logoBobAnimation;
@@ -27,27 +25,22 @@ class _IntroScreenState extends State<IntroScreen>
   void initState() {
     super.initState();
 
-    // --- 4. Initialize the ENTRY controller (runs once) ---
     _entryController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
 
-    // --- 5. Initialize the BOBBING controller (loops) ---
     _bobbingController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
 
-    // --- 6. Setup the ENTRY animations ---
-    // Logo slides in from -300 (top) to 0
     _logoSlideAnimation = Tween<double>(begin: -300.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _entryController,
         curve: Curves.easeOutBack,
       ),
     );
-    // Buttons slide in from 300 (bottom) to 0
     _buttonSlideAnimation = Tween<double>(begin: 300.0, end: 0.0).animate(
       CurvedAnimation(
         parent: _entryController,
@@ -55,15 +48,12 @@ class _IntroScreenState extends State<IntroScreen>
       ),
     );
 
-    // --- 7. Setup the BOBBING animations ---
-    // Logo bobs between -8 and 8
     _logoBobAnimation = Tween<double>(begin: -8.0, end: 8.0).animate(
       CurvedAnimation(
         parent: _bobbingController,
         curve: Curves.easeInOut,
       ),
     );
-    // Buttons bob between 4 and -4
     _buttonBobAnimation = Tween<double>(begin: 4.0, end: -4.0).animate(
       CurvedAnimation(
         parent: _bobbingController,
@@ -71,21 +61,17 @@ class _IntroScreenState extends State<IntroScreen>
       ),
     );
 
-    // --- 8. Link the controllers ---
     _entryController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // When entry is done, start the bobbing
         _bobbingController.repeat(reverse: true);
       }
     });
 
-    // --- 9. Start the entry animation ---
     _entryController.forward();
   }
 
   @override
   void dispose() {
-    // --- 10. Dispose BOTH controllers ---
     _entryController.dispose();
     _bobbingController.dispose();
     super.dispose();
@@ -122,10 +108,82 @@ class _IntroScreenState extends State<IntroScreen>
                 style: TextStyle(color: Colors.yellowAccent, fontSize: 16),
               ),
               onPressed: () {
+                AudioService.instance.playTapSound();
                 Navigator.of(context).pop();
               },
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.red[900],
+              title: const Text(
+                'Settings',
+                style: TextStyle(
+                  color: Colors.yellowAccent,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // --- Toggle for PR 1 ---
+                  SwitchListTile(
+                    title: const Text(
+                      'Sound Effects',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    value: AudioService.instance.isSfxEnabled,
+                    onChanged: (bool value) async {
+                      // Toggle the sound
+                      await AudioService.instance.toggleSfx();
+                      // Rebuild the dialog's UI
+                      setDialogState(() {});
+                    },
+                    activeColor: Colors.yellowAccent,
+                  ),
+
+                  // --- Toggle for PR 2 ---
+                  SwitchListTile(
+                    title: const Text(
+                      'Background Music',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    value: AudioService.instance.isBgmEnabled,
+                    onChanged: (bool value) async {
+                      // Toggle the music
+                      await AudioService.instance.toggleBgm();
+                      // Rebuild the dialog's UI
+                      setDialogState(() {});
+                    },
+                    activeColor: Colors.yellowAccent,
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(color: Colors.yellowAccent, fontSize: 16),
+                  ),
+                  onPressed: () {
+                    // Also play a tap sound when closing
+                    AudioService.instance.playTapSound();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -137,6 +195,7 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
+    // --- 1. Get screen size for responsiveness ---
     final screenSize = MediaQuery.of(context).size;
     final screenHeight = screenSize.height;
     final screenWidth = screenSize.width;
@@ -145,120 +204,134 @@ class _IntroScreenState extends State<IntroScreen>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Background Image (no change)
           Image.asset(
             'assets/Theme/a.png',
             fit: BoxFit.cover,
             color: Colors.black.withOpacity(0.4),
             colorBlendMode: BlendMode.darken,
           ),
-
-          // --- 2. Wrap UI in SafeArea and SingleChildScrollView ---
-          // SafeArea avoids notches/system bars
-          // SingleChildScrollView fixes vertical overflow by allowing scrolling
           SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // --- 3. Animate the Logo (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (BuildContext context, Widget? child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _logoSlideAnimation.value +
-                                _logoBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: SizedBox(
-                      // --- Use relative sizes instead of 600x400 ---
-                      width: screenWidth * 0.9, // 90% of screen width
-                      height: screenHeight * 0.4, // 40% of screen height
-                      child: Image.asset(
-                        "assets/Theme/NM.png",
-                        // --- Add .contain to prevent image distortion ---
-                        fit: BoxFit.contain,
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      AnimatedBuilder(
+                        animation: Listenable.merge(
+                            [_entryController, _bobbingController]),
+                        builder: (BuildContext context, Widget? child) {
+                          return Transform.translate(
+                            offset: Offset(
+                                0,
+                                _logoSlideAnimation.value +
+                                    _logoBobAnimation.value),
+                            child: child,
+                          );
+                        },
+                        child: SizedBox(
+                          width: screenWidth * 0.9,
+                          height: screenHeight * 0.4,
+                          child: Image.asset(
+                            "assets/Theme/NM.png",
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
+
+                      const SizedBox(height: 4.0),
+                      AnimatedBuilder(
+                        animation: Listenable.merge(
+                            [_entryController, _bobbingController]),
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(
+                                0,
+                                _buttonSlideAnimation.value +
+                                    _buttonBobAnimation.value),
+                            child: child,
+                          );
+                        },
+                        child: _buildImageButton(
+                          imagePath: 'assets/Theme/StartBtn.png',
+                          onTap: _startGame,
+                          width: screenWidth * 0.7,
+                          height: screenHeight * 0.12,
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+
+                      // --- Animate the Rules Button ---
+                      AnimatedBuilder(
+                        animation: Listenable.merge(
+                            [_entryController, _bobbingController]),
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(
+                                0,
+                                _buttonSlideAnimation.value +
+                                    _buttonBobAnimation.value),
+                            child: child,
+                          );
+                        },
+                        child: _buildImageButton(
+                          imagePath: 'assets/Theme/rules.png',
+                          onTap: _showRulesDialog,
+                          width: screenWidth * 0.7,
+                          height: screenHeight * 0.12,
+                        ),
+                      ),
+                      const SizedBox(height: 20.0),
+
+                      // --- SETTINGS BUTTON HAS BEEN REMOVED FROM HERE ---
+
+                      // --- Animate the Exit Button ---
+                      AnimatedBuilder(
+                        animation: Listenable.merge(
+                            [_entryController, _bobbingController]),
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(
+                                0,
+                                _buttonSlideAnimation.value +
+                                    _buttonBobAnimation.value),
+                            child: child,
+                          );
+                        },
+                        child: _buildImageButton(
+                          imagePath: 'assets/Theme/exit.png',
+                          onTap: _exitGame,
+                          width: screenWidth * 0.7,
+                          height: screenHeight * 0.12,
+                        ),
+                      ),
+                      const SizedBox(height: 30.0),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 8.0,
+                  right: 8.0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.red.withOpacity(0.3),
+                      shape: BoxShape.circle,
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.settings),
+                      color: Colors.white,
+                      iconSize: 30.0,
+                      tooltip: 'Settings',
+                      onPressed: () {
+                        // Play tap sound *first*
+                        AudioService.instance.playTapSound();
+                        // Then open the dialog
+                        _showSettingsDialog();
+                      },
                     ),
                   ),
-
-                  const SizedBox(height: 4.0), // Spacer
-
-                  // --- 4. Animate the Start Button (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _buttonSlideAnimation.value +
-                                _buttonBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: _buildImageButton(
-                      imagePath: 'assets/Theme/StartBtn.png',
-                      onTap: _startGame,
-                      // --- Pass in relative sizes ---
-                      width: screenWidth * 0.7, // 70% of screen width
-                      height: screenHeight * 0.12, // 12% of screen height
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  // --- 5. Animate the Rules Button (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _buttonSlideAnimation.value +
-                                _buttonBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: _buildImageButton(
-                      imagePath: 'assets/Theme/rules.png',
-                      onTap: _showRulesDialog,
-                      // --- Pass in relative sizes ---
-                      width: screenWidth * 0.7,
-                      height: screenHeight * 0.12,
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  // --- 6. Animate the Exit Button (with responsive size) ---
-                  AnimatedBuilder(
-                    animation: Listenable.merge(
-                        [_entryController, _bobbingController]),
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(
-                            0,
-                            _buttonSlideAnimation.value +
-                                _buttonBobAnimation.value),
-                        child: child,
-                      );
-                    },
-                    child: _buildImageButton(
-                      imagePath: 'assets/Theme/exit.png',
-                      onTap: _exitGame,
-                      // --- Pass in relative sizes ---
-                      width: screenWidth * 0.7,
-                      height: screenHeight * 0.12,
-                    ),
-                  ),
-                  // --- Add final padding so the last button doesn't hug the bottom ---
-                  const SizedBox(height: 30.0),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -266,7 +339,6 @@ class _IntroScreenState extends State<IntroScreen>
     );
   }
 
-  /// A helper method to build styled buttons to avoid code repetition.
   Widget _buildImageButton({
     required String imagePath,
     required VoidCallback onTap,
@@ -274,7 +346,12 @@ class _IntroScreenState extends State<IntroScreen>
     double? height = 105,
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        AudioService.instance.playTapSound();
+
+        onTap();
+      },
+      // onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           boxShadow: [
