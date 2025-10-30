@@ -136,6 +136,7 @@ class _IntroScreenState extends State<IntroScreen>
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // --- Toggle for PR 1 ---
                   SwitchListTile(
                     title: const Text(
                       'Sound Effects',
@@ -150,7 +151,22 @@ class _IntroScreenState extends State<IntroScreen>
                     },
                     activeColor: Colors.yellowAccent,
                   ),
-                  // We will add "Background Music" toggle here in PR 2
+
+                  // --- Toggle for PR 2 ---
+                  SwitchListTile(
+                    title: const Text(
+                      'Background Music',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    value: AudioService.instance.isBgmEnabled,
+                    onChanged: (bool value) async {
+                      // Toggle the music
+                      await AudioService.instance.toggleBgm();
+                      // Rebuild the dialog's UI
+                      setDialogState(() {});
+                    },
+                    activeColor: Colors.yellowAccent,
+                  ),
                 ],
               ),
               actions: <Widget>[
@@ -160,6 +176,7 @@ class _IntroScreenState extends State<IntroScreen>
                     style: TextStyle(color: Colors.yellowAccent, fontSize: 16),
                   ),
                   onPressed: () {
+                    // Also play a tap sound when closing
                     AudioService.instance.playTapSound();
                     Navigator.of(context).pop();
                   },
@@ -172,7 +189,6 @@ class _IntroScreenState extends State<IntroScreen>
     );
   }
 
-  /// Exits the application.
   void _exitGame() {
     SystemNavigator.pop();
   }
