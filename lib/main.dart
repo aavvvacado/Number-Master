@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:number_master/Bloc/game_bloc.dart';
-
 import 'package:number_master/Screens/intro_screen.dart';
+import 'package:number_master/Screens/welcome_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+
+  final bool hasSeenWelcome = prefs.getBool('hasSeenWelcome') ?? false;
+
+  runApp(MyApp(hasSeenWelcome: hasSeenWelcome));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool hasSeenWelcome;
+
+  const MyApp({super.key, required this.hasSeenWelcome});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // The GameBloc manages all the game state and logic.
       create: (context) => GameBloc(),
       child: MaterialApp(
         title: 'Number Master',
@@ -44,7 +52,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        home: const IntroScreen(),
+        home: hasSeenWelcome ? const IntroScreen() : const WelcomeScreen(),
         debugShowCheckedModeBanner: false,
       ),
     );

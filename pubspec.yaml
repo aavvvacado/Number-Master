@@ -39,6 +39,7 @@ dependencies:
   equatable:
   bloc: ^9.1.0
   google_fonts: ^6.3.2
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
