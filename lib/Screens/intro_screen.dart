@@ -144,15 +144,13 @@ class _IntroScreenState extends State<IntroScreen>
                     ),
                     value: AudioService.instance.isSfxEnabled,
                     onChanged: (bool value) async {
-                      // Toggle the sound
                       await AudioService.instance.toggleSfx();
-                      // Rebuild the dialog's UI
+
                       setDialogState(() {});
                     },
                     activeColor: Colors.yellowAccent,
                   ),
 
-                  // --- Toggle for PR 2 ---
                   SwitchListTile(
                     title: const Text(
                       'Background Music',
